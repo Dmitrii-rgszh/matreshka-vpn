@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
+import { useApi } from '../hooks/useApi';
 import PremiumModal from '../components/UI/PremiumModal';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 
 interface Server {
   id: string;
@@ -16,82 +18,54 @@ interface Server {
 
 const Servers: React.FC = () => {
   const { hapticFeedback } = useTelegram();  
-  const [selectedServer, setSelectedServer] = useState<string | null>('moscow-1');
+  const { getServers, connectToServer, loading, error } = useApi();
+  const [selectedServer, setSelectedServer] = useState<string | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const servers: Server[] = [
-    {
-      id: 'moscow-1',
-      name: 'Москва #1',
-      country: 'Россия',
-      city: 'Москва',
-      flag: '🇷🇺',
-      ping: 15,
-      load: 45,
-      isPremium: false,
-      isRecommended: true,
-    },
-    {
-      id: 'spb-1',
-      name: 'Санкт-Петербург #1',
-      country: 'Россия',
-      city: 'СПб',
-      flag: '🇷🇺',
-      ping: 28,
-      load: 32,
-      isPremium: false,
-    },
-    {
-      id: 'novosibirsk-1',
-      name: 'Новосибирск #1',
-      country: 'Россия',
-      city: 'Новосибирск',
-      flag: '🇷🇺',
-      ping: 65,
-      load: 18,
-      isPremium: false,
-    },
-    {
-      id: 'amsterdam-1',
-      name: 'Амстердам #1',
-      country: 'Нидерланды',
-      city: 'Амстердам',
-      flag: '🇳🇱',
-      ping: 75,
-      load: 55,
-      isPremium: true,
-    },
-    {
-      id: 'singapore-1',
-      name: 'Сингапур #1',
-      country: 'Сингапур',
-      city: 'Сингапур',
-      flag: '🇸🇬',
-      ping: 145,
-      load: 28,
-      isPremium: true,
-    },
-    {
-      id: 'usa-1',
-      name: 'Нью-Йорк #1',
-      country: 'США',
-      city: 'Нью-Йорк',
-      flag: '🇺🇸',
-      ping: 120,
-      load: 67,
-      isPremium: true,
-    },
-  ];
+  const [servers, setServers] = useState<Server[]>([]);
+  const [connecting, setConnecting] = useState(false);
 
-  const handleServerSelect = (serverId: string, isPremium: boolean) => {
+  // Загружаем серверы при монтировании компонента
+  useEffect(() => {
+    const loadServers = async () => {
+      const response = await getServers();
+      if (response?.servers) {
+        setServers(response.servers);
+        // Выбираем рекомендуемый сервер по умолчанию
+        const recommended = response.servers.find(s => s.isRecommended && !s.isPremium);
+        if (recommended) {
+          setSelectedServer(recommended.id);
+        }
+      }
+    };
+
+    loadServers();
+  }, []);
+
+  const handleServerSelect = async (serverId: string, isPremium: boolean) => {
     if (isPremium) {
       hapticFeedback('error');
       setShowPremiumModal(true);
       return;
     }
-  
-    hapticFeedback('success');
-    setSelectedServer(serverId);
+
+    setConnecting(true);
+    hapticFeedback('light');
+    
+    try {
+      const response = await connectToServer(serverId);
+      if (response?.success) {
+        setSelectedServer(serverId);
+        hapticFeedback('success');
+      } else {
+        hapticFeedback('error');
+      }
+    } catch (error) {
+      hapticFeedback('error');
+      console.error('Connection failed:', error);
+    } finally {
+      setConnecting(false);
+    }
   };
 
   const handleUpgrade = () => {
@@ -247,6 +221,29 @@ const Servers: React.FC = () => {
     },
   };
 
+  if (loading && servers.length === 0) {
+    return (
+      <div style={pageStyles.container}>
+        <LoadingSpinner size="large" message="Загрузка серверов..." />
+      </div>
+    );
+  }
+
+  // Показываем ошибку
+  if (error) {
+    return (
+      <div style={pageStyles.container}>
+        <h1 style={pageStyles.title}>❌ Ошибка подключения</h1>
+        <p style={{ textAlign: 'center', color: '#ff6b6b', marginBottom: '20px' }}>
+          Не удается подключиться к серверу
+        </p>
+        <p style={{ textAlign: 'center', color: '#b0b8c5', fontSize: '14px' }}>
+          Проверьте, что бэкенд запущен на порту 8000
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div style={pageStyles.container}>
       <h1 style={pageStyles.title}>🌍 Серверы</h1>
@@ -260,12 +257,13 @@ const Servers: React.FC = () => {
         return (
           <div
             key={server.id}
+            onClick={() => !connecting && handleServerSelect(server.id, server.isPremium)}
             style={{
               ...pageStyles.serverCard,
               ...(isSelected ? pageStyles.serverCardSelected : {}),
               ...(server.isPremium ? pageStyles.serverCardPremium : {}),
+              ...(connecting ? { opacity: 0.7, cursor: 'not-allowed' } : {}),
             }}
-            onClick={() => handleServerSelect(server.id, server.isPremium)}
             onMouseEnter={(e) => {
               if (!server.isPremium) {
                 e.currentTarget.style.transform = 'translateY(-2px)';

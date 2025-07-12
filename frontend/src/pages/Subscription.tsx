@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
+import { useApi } from '../hooks/useApi';
 
 interface SubscriptionPlan {
   id: string;
@@ -13,8 +14,10 @@ interface SubscriptionPlan {
 }
 
 const Subscription: React.FC = () => {
-  const { hapticFeedback, showAlert } = useTelegram();
+  const { hapticFeedback, showAlert, user } = useTelegram();
+  const { createSubscription, loading } = useApi();
   const [selectedPlan, setSelectedPlan] = useState<string>('yearly');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const plans: SubscriptionPlan[] = [
     {
@@ -53,10 +56,40 @@ const Subscription: React.FC = () => {
     setSelectedPlan(planId);
   };
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
+    if (!user) {
+      showAlert('Ошибка: пользователь не авторизован');
+      return;
+    }
+
     const plan = plans.find(p => p.id === selectedPlan);
-    hapticFeedback('success');
-    showAlert(`Подписка "${plan?.name}" будет активирована через Telegram Stars!`);
+    if (!plan) return;
+
+    setIsProcessing(true);
+    hapticFeedback('medium');
+
+    try {
+      const response = await createSubscription(selectedPlan);
+      
+      if (response?.success) {
+        hapticFeedback('success');
+        showAlert(`🎉 Подписка "${plan.name}" успешно активирована!\n\nТеперь у вас есть доступ ко всем Premium серверам.`);
+        
+        // Небольшая задержка перед переходом на главную
+        setTimeout(() => {
+          window.location.hash = '/';
+        }, 2000);
+      } else {
+        hapticFeedback('error');
+        showAlert('Не удалось активировать подписку. Попробуйте позже.');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      hapticFeedback('error');
+      showAlert('Произошла ошибка при оформлении подписки');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const pageStyles = {
@@ -333,20 +366,28 @@ const Subscription: React.FC = () => {
         );
       })}
 
-      {/* Кнопка подписки */}
       <button
-        style={pageStyles.subscribeButton}
+        style={{
+          ...pageStyles.subscribeButton,
+          opacity: isProcessing || loading ? 0.7 : 1,
+          cursor: isProcessing || loading ? 'not-allowed' : 'pointer',
+        }}
         onClick={handleSubscribe}
+        disabled={isProcessing || loading}
         onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.6)';
+          if (!isProcessing && !loading) {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.6)';
+          }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0px)';
-          e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
+          if (!isProcessing && !loading) {
+            e.currentTarget.style.transform = 'translateY(0px)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
+          }
         }}
       >
-        Получить Premium 👑
+        {isProcessing || loading ? '⏳ Обработка...' : 'Получить Premium 👑'}
       </button>
 
       <style>{`

@@ -4,10 +4,24 @@ interface PremiumModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpgrade: () => void;
+  isProcessing?: boolean;
 }
 
-const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, onUpgrade }) => {
+const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, onUpgrade, isProcessing = false }) => {
   if (!isOpen) return null;
+  
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
 
   const modalStyles = {
     overlay: {
@@ -187,7 +201,10 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, onUpgrade 
         {/* Кнопка закрытия */}
         <button 
           style={modalStyles.closeButton}
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
           }}
@@ -251,18 +268,28 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, onUpgrade 
               Отмена
             </button>
             <button
-              style={{ ...modalStyles.button, ...modalStyles.upgradeButton }}
+              style={{ 
+                ...modalStyles.button, 
+                ...modalStyles.upgradeButton,
+                opacity: isProcessing ? 0.7 : 1,
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+              }}
               onClick={onUpgrade}
+              disabled={isProcessing}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.6)';
+                if (!isProcessing) {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.6)';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0px)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
+                if (!isProcessing) {
+                  e.currentTarget.style.transform = 'translateY(0px)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
+                }
               }}
             >
-              Получить Premium 👑
+              {isProcessing ? '⏳ Обработка...' : 'Получить Premium 👑'}
             </button>
           </div>
         </div>

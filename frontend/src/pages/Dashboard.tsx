@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useTelegram } from '../hooks/useTelegram';
+import { useApi } from '../hooks/useApi';
 import ConnectButton from '../components/VPN/ConnectButton';
 import ConnectionStatus from '../components/VPN/ConnectionStatus';
 import Card from '../components/UI/Card';
 
 const Dashboard: React.FC = () => {
   const { user, hapticFeedback } = useTelegram();
+  const { getServers, connectToServer, disconnectFromServer, getUserStats, authenticate } = useApi();
   const [isConnected, setIsConnected] = useState(false);
   const [currentServer, setCurrentServer] = useState<string | null>(null);
   const [userIP, setUserIP] = useState<string>('');
   const [connectionTime, setConnectionTime] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [userStats, setUserStats] = useState<any>(null);
 
   // Имитация получения IP адреса
   useEffect(() => {
-    // В реальном приложении здесь будет API запрос
-    setUserIP('192.168.1.1');
-  }, []);
+    const initializeData = async () => {
+      // Авторизация пользователя
+      if (user) {
+        await authenticate();
+        
+        // Получаем статистику пользователя
+        const stats = await getUserStats();
+        if (stats) {
+          setUserStats(stats);
+        }
+      }
+      
+      // Имитация получения IP адреса (пока без реального API)
+      setUserIP('192.168.1.1');
+    };
+
+    initializeData();
+  }, [user]);
 
   // Таймер подключения
   useEffect(() => {
@@ -34,21 +52,42 @@ const Dashboard: React.FC = () => {
     setIsConnecting(true);
     
     try {
-      // Имитация подключения
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
       if (!isConnected) {
-        setIsConnected(true);
-        setCurrentServer('Москва #1');
-        setConnectionTime(0);
-        hapticFeedback('success');
+        // Подключение - ищем рекомендуемый сервер
+        const serversResponse = await getServers();
+        if (serversResponse?.servers) {
+          const recommendedServer = serversResponse.servers.find(
+            s => s.isRecommended && !s.isPremium
+          );
+          
+          if (recommendedServer && user) {
+            const connectResponse = await connectToServer(recommendedServer.id);
+            if (connectResponse?.success) {
+              setIsConnected(true);
+              setCurrentServer(recommendedServer.name);
+              setConnectionTime(0);
+              hapticFeedback('success');
+            } else {
+              hapticFeedback('error');
+            }
+          }
+        }
       } else {
-        setIsConnected(false);
-        setCurrentServer(null);
-        setConnectionTime(0);
-        hapticFeedback('success');
+        // Отключение
+        if (user) {
+          const disconnectResponse = await disconnectFromServer();
+          if (disconnectResponse?.success) {
+            setIsConnected(false);
+            setCurrentServer(null);
+            setConnectionTime(0);
+            hapticFeedback('success');
+          } else {
+            hapticFeedback('error');
+          }
+        }
       }
     } catch (error) {
+      console.error('Connection error:', error);
       hapticFeedback('error');
     } finally {
       setIsConnecting(false);
@@ -147,9 +186,9 @@ const Dashboard: React.FC = () => {
           color="#FFD700"
         />
         <Card 
-          title="Ваш IP"
-          icon="📍"
-          value={userIP}
+          title="Подключений"
+          icon="📊"
+          value={userStats?.total_connections?.toString() || '0'}
           color="#2196F3"
         />
         <Card 
