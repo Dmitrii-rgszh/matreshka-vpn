@@ -19,10 +19,10 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const cardStyles = {
     card: {
-      background: 'linear-gradient(135deg, #16213e 0%, #0f3460 100%)',
+      background: 'linear-gradient(135deg, #8B0000 0%, #DC143C 100%)',
       borderRadius: '12px',
       padding: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(255, 215, 0, 0.3)',
       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
       cursor: onClick ? 'pointer' : 'default',
       transition: 'all 0.3s ease',

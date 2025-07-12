@@ -8,7 +8,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ user }) => {
   const headerStyles = {
     header: {
-      background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+      background: 'linear-gradient(135deg, #8B0000 0%, #DC143C 100%)',
       borderBottom: '1px solid rgba(255, 215, 0, 0.2)',
       padding: '16px 20px',
       position: 'sticky' as const,

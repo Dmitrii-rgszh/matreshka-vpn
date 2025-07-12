@@ -38,7 +38,7 @@ const Navigation: React.FC = () => {
       bottom: 0,
       left: 0,
       right: 0,
-      background: 'linear-gradient(180deg, #16213e 0%, #0f3460 100%)',
+      background: 'linear-gradient(180deg, #8B0000 0%, #DC143C 100%)',
       borderTop: '1px solid rgba(255, 215, 0, 0.2)',
       padding: '12px 20px 20px',
       boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
@@ -65,7 +65,7 @@ const Navigation: React.FC = () => {
       minWidth: '60px',
     },
     navItemActive: {
-      background: 'linear-gradient(135deg, #DC143C 0%, #8B0000 100%)',
+      background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
       boxShadow: '0 0 20px rgba(220, 20, 60, 0.5)',
       transform: 'translateY(-4px)',
     },

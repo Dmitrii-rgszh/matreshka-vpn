@@ -22,7 +22,7 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
 
   const statusStyles = {
     container: {
-      background: 'linear-gradient(135deg, #16213e 0%, #0f3460 100%)',
+      background: 'linear-gradient(135deg, #8B0000 0%, #DC143C 100%)',
       borderRadius: '16px',
       padding: '20px',
       border: '1px solid rgba(255, 255, 255, 0.1)',
