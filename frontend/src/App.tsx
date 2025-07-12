@@ -28,102 +28,64 @@ const App: React.FC = () => {
       overflow: 'hidden',
     }}>
       
-      {/* Декоративные русские орнаменты */}
+      {/* Декоративные русские орнаменты - простые */}
       <div style={{
         position: 'absolute',
-        top: '0',
+        top: '20px',
         left: '0',
         right: '0',
-        height: '80px',
-        background: `url("data:image/svg+xml,${encodeURIComponent(`
-          <svg viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="russianPattern" x="0" y="0" width="100" height="80" patternUnits="userSpaceOnUse">
-                <!-- Хохлома орнамент -->
-                <path d="M10,40 Q30,20 50,40 Q70,60 90,40" stroke="${russianColors.gold}" stroke-width="3" fill="none"/>
-                <circle cx="20" cy="35" r="4" fill="${russianColors.gold}"/>
-                <circle cx="50" cy="45" r="3" fill="${russianColors.darkGold}"/>
-                <circle cx="80" cy="35" r="4" fill="${russianColors.gold}"/>
-                <!-- Листья -->
-                <path d="M15,30 Q20,25 25,30 Q20,35 15,30" fill="${russianColors.gold}" opacity="0.8"/>
-                <path d="M75,45 Q80,40 85,45 Q80,50 75,45" fill="${russianColors.gold}" opacity="0.8"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#russianPattern)"/>
-          </svg>
-        `)}")`,
-        backgroundSize: 'cover',
-        opacity: 0.3,
+        textAlign: 'center',
+        color: russianColors.gold,
+        fontSize: '20px',
+        opacity: 0.4,
         zIndex: 1,
-      }} />
+        letterSpacing: '10px',
+      }}>
+        ✦ ✧ ✦ ✧ ✦ ✧ ✦
+      </div>
 
       {/* Нижний орнамент */}
       <div style={{
         position: 'absolute',
-        bottom: '0',
+        bottom: '20px',
         left: '0',
         right: '0',
-        height: '80px',
-        background: `url("data:image/svg+xml,${encodeURIComponent(`
-          <svg viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="russianPatternBottom" x="0" y="0" width="120" height="80" patternUnits="userSpaceOnUse">
-                <!-- Гжель мотивы -->
-                <path d="M20,50 Q40,30 60,50 Q80,70 100,50" stroke="${russianColors.gold}" stroke-width="2" fill="none"/>
-                <circle cx="30" cy="45" r="5" fill="none" stroke="${russianColors.gold}" stroke-width="2"/>
-                <circle cx="70" cy="55" r="3" fill="${russianColors.gold}"/>
-                <path d="M90,40 L95,35 L100,40 L95,45 Z" fill="${russianColors.darkGold}"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#russianPatternBottom)"/>
-          </svg>
-        `)}")`,
-        backgroundSize: 'cover',
-        opacity: 0.3,
-        transform: 'rotate(180deg)',
+        textAlign: 'center',
+        color: russianColors.gold,
+        fontSize: '20px',
+        opacity: 0.4,
         zIndex: 1,
-      }} />
+        letterSpacing: '10px',
+      }}>
+        ✧ ✦ ✧ ✦ ✧ ✦ ✧
+      </div>
 
       {/* Боковые орнаменты */}
       <div style={{
         position: 'absolute',
-        left: '0',
+        left: '20px',
         top: '50%',
         transform: 'translateY(-50%) rotate(-90deg)',
-        width: '200px',
-        height: '60px',
-        background: `url("data:image/svg+xml,${encodeURIComponent(`
-          <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20,30 Q60,10 100,30 Q140,50 180,30" stroke="${russianColors.gold}" stroke-width="2" fill="none" opacity="0.4"/>
-            <circle cx="40" cy="25" r="3" fill="${russianColors.gold}" opacity="0.6"/>
-            <circle cx="100" cy="35" r="4" fill="${russianColors.gold}" opacity="0.6"/>
-            <circle cx="160" cy="25" r="3" fill="${russianColors.gold}" opacity="0.6"/>
-          </svg>
-        `)}")`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
+        color: russianColors.gold,
+        fontSize: '16px',
+        opacity: 0.3,
         zIndex: 1,
-      }} />
+      }}>
+        ✦ ✧ ✦
+      </div>
 
       <div style={{
         position: 'absolute',
-        right: '0',
+        right: '20px',
         top: '50%',
         transform: 'translateY(-50%) rotate(90deg)',
-        width: '200px',
-        height: '60px',
-        background: `url("data:image/svg+xml,${encodeURIComponent(`
-          <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20,30 Q60,10 100,30 Q140,50 180,30" stroke="${russianColors.gold}" stroke-width="2" fill="none" opacity="0.4"/>
-            <circle cx="40" cy="25" r="3" fill="${russianColors.gold}" opacity="0.6"/>
-            <circle cx="100" cy="35" r="4" fill="${russianColors.gold}" opacity="0.6"/>
-            <circle cx="160" cy="25" r="3" fill="${russianColors.gold}" opacity="0.6"/>
-          </svg>
-        `)}")`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
+        color: russianColors.gold,
+        fontSize: '16px',
+        opacity: 0.3,
         zIndex: 1,
-      }} />
+      }}>
+        ✦ ✧ ✦
+      </div>
 
       {/* Основной контент */}
       <div style={{ position: 'relative', zIndex: 2 }}>
