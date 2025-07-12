@@ -15,6 +15,7 @@ interface Server {
 }
 
 const Servers: React.FC = () => {
+  const { hapticFeedback } = useTelegram();  
   const [selectedServer, setSelectedServer] = useState<string | null>('moscow-1');
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
