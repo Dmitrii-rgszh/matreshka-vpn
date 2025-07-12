@@ -19,8 +19,8 @@ export interface TelegramWebApp {
   close(): void;
   enableClosingConfirmation(): void;
   disableClosingConfirmation(): void;
-  onEvent(eventType: string, eventHandler: () => void): void;
-  offEvent(eventType: string, eventHandler: () => void): void;
+  onEvent(eventType: string, eventHandler: (event?: any) => void): void;
+  offEvent(eventType: string, eventHandler: (event?: any) => void): void;
   sendData(data: string): void;
   openLink(url: string): void;
   openTelegramLink(url: string): void;
@@ -31,6 +31,8 @@ export interface TelegramWebApp {
   closeScanQrPopup(): void;
   requestWriteAccess(): void;
   requestContact(): void;
+  setHeaderColor?(color: string): void;
+  setBackgroundColor?(color: string): void;
   
   // Компоненты UI
   MainButton: MainButton;

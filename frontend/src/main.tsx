@@ -176,9 +176,13 @@ if (window.Telegram?.WebApp) {
   tg.ready();
   tg.expand();
   
-  // Настройка цветовой схемы
-  tg.setHeaderColor('#1a1a2e');
-  tg.setBackgroundColor('#1a1a2e');
+  // Настройка цветовой схемы (если поддерживается)
+  if (tg.setHeaderColor) {
+    tg.setHeaderColor('#FF6B6B');
+  }
+  if (tg.setBackgroundColor) {
+    tg.setBackgroundColor('#FF6B6B');
+  }
   
   // Отключение подтверждения закрытия
   tg.enableClosingConfirmation();

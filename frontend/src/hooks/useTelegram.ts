@@ -87,15 +87,19 @@ export const useTelegram = () => {
           ]
         });
         // Обработка результата через события
-        const handler = (event: any) => {
-          if (event.button_id === 'ok') {
+        const handler = (event?: any) => {
+          if (event?.button_id === 'ok') {
             resolve(true);
           } else {
             resolve(false);
           }
-          webApp.offEvent('popupClosed', handler);
+          if (webApp.offEvent) {
+            webApp.offEvent('popupClosed', handler);
+          }
         };
-        webApp.onEvent('popupClosed', handler);
+        if (webApp.onEvent) {
+          webApp.onEvent('popupClosed', handler);
+        }
       } else {
         resolve(confirm(message));
       }
