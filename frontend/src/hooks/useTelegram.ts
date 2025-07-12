@@ -7,9 +7,12 @@ export const useTelegram = () => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    console.log('useTelegram useEffect triggered');
     const app = window.Telegram?.WebApp;
+    console.log('Telegram WebApp found:', !!app);
     
     if (app) {
+      console.log('Setting up real Telegram user');
       setWebApp(app);
       setUser(app.initDataUnsafe?.user || null);
       
@@ -24,11 +27,25 @@ export const useTelegram = () => {
       
       setIsReady(true);
     } else {
-      // Для разработки вне Telegram
-      console.warn('Telegram WebApp не найден. Режим разработки.');
+      // Для разработки вне Telegram - создаем тестового пользователя
+      console.warn('Telegram WebApp не найден. Используем тестового пользователя.');
+      const testUser = {
+        id: 123456789,
+        first_name: 'Тест',
+        last_name: 'Пользователь',
+        username: 'testuser',
+        language_code: 'ru',
+        is_premium: false
+      };
+      console.log('Setting test user:', testUser);
+      setUser(testUser);
       setIsReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    console.log('User state changed:', user);
+  }, [user]);
 
   const showMainButton = (text: string, onClick: () => void) => {
     if (webApp?.MainButton) {

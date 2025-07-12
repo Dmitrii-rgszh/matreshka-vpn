@@ -7,6 +7,8 @@ import Card from '../components/UI/Card';
 
 const Dashboard: React.FC = () => {
   const { user, hapticFeedback } = useTelegram();
+  // Отладка пользователя
+  console.log('Dashboard user state:', user);
   const { getServers, connectToServer, disconnectFromServer, getUserStats, authenticate } = useApi();
   const [isConnected, setIsConnected] = useState(false);
   const [currentServer, setCurrentServer] = useState<string | null>(null);
@@ -48,20 +50,32 @@ const Dashboard: React.FC = () => {
   }, [isConnected]);
 
   const handleConnect = async () => {
+    console.log('handleConnect clicked!', { isConnected, isConnecting, user });
+    
+    if (!user) {
+      console.error('User not authenticated');
+      hapticFeedback('error');
+      return;
+    }
+
     hapticFeedback('medium');
     setIsConnecting(true);
     
     try {
       if (!isConnected) {
+        console.log('Trying to connect...');
         // Подключение - ищем рекомендуемый сервер
         const serversResponse = await getServers();
+        console.log('Servers response:', serversResponse);
         if (serversResponse?.servers) {
           const recommendedServer = serversResponse.servers.find(
             s => s.isRecommended && !s.isPremium
           );
+          console.log('Recommended server:', recommendedServer);
           
           if (recommendedServer && user) {
             const connectResponse = await connectToServer(recommendedServer.id);
+            console.log('Connect response:', connectResponse);
             if (connectResponse?.success) {
               setIsConnected(true);
               setCurrentServer(recommendedServer.name);
@@ -70,12 +84,16 @@ const Dashboard: React.FC = () => {
             } else {
               hapticFeedback('error');
             }
+          } else {
+            console.log('No recommended server or user:', { recommendedServer, user });
           }
         }
       } else {
+        console.log('Disconnecting...');
         // Отключение
         if (user) {
           const disconnectResponse = await disconnectFromServer();
+          console.log('Disconnect response:', disconnectResponse);
           if (disconnectResponse?.success) {
             setIsConnected(false);
             setCurrentServer(null);
