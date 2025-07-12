@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  
+  <!-- Telegram WebApp стили -->
+  <meta name="telegram-web-app" content="true" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="color-scheme" content="dark light" />
+  
+  <!-- Описание приложения -->
+  <title>РусVPN - Защита с душой</title>
+  <meta name="description" content="Безопасный VPN с русской душой. Подключайтесь к серверам по всему миру через Telegram." />
+  <meta name="keywords" content="VPN, Telegram, безопасность, приватность, Россия" />
+  
+  <!-- Open Graph для Telegram -->
+  <meta property="og:title" content="РусVPN - Защита с душой" />
+  <meta property="og:description" content="Безопасный VPN через Telegram WebApp" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/matreshka-logo.png" />
+  
+  <!-- Иконки -->
+  <link rel="icon" type="image/png" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/matreshka-logo.png" />
+  
+  <!-- Предзагрузка шрифтов -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Telegram WebApp Script -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <style>
+    /* Минимальные стили для предотвращения FOUC */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1a1a2e;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow-x: hidden;
+    }
+    
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Прелоадер */
+    .app-preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    
+    .preloader-logo {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: preloader-float 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px #FFD700);
+    }
+    
+    .preloader-text {
+      font-size: 24px;
+      font-weight: 600;
+      color: #FFD700;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .preloader-subtitle {
+      font-size: 14px;
+      color: #b0b8c5;
+      text-align: center;
+    }
+    
+    .preloader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 215, 0, 0.3);
+      border-top: 3px solid #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-top: 20px;
+    }
+    
+    @keyframes preloader-float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Скрыть прелоадер после загрузки */
+    .app-loaded .app-preloader {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="app-preloader" id="preloader">
+    <div class="preloader-logo">🪆</div>
+    <div class="preloader-text">РусVPN</div>
+    <div class="preloader-subtitle">Защита с душой</div>
+    <div class="preloader-spinner"></div>
+  </div>
+  
+  <!-- Основное приложение -->
+  <div id="root"></div>
+  
+  <script>
+    // Скрытие прелоадера после загрузки
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.body.classList.add('app-loaded');
+        setTimeout(function() {
+          const preloader = document.getElementById('preloader');
+          if (preloader) {
+            preloader.remove();
+          }
+        }, 500);
+      }, 1000);
+    });
+    
+    // Инициализация Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      
+      // Настройка viewport
+      tg.ready();
+      tg.expand();
+      
+      // Настройка темы
+      if (tg.colorScheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+      
+      // Отключение контекстного меню
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+      
+      // Отключение выделения текста
+      document.addEventListener('selectstart', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+        }
+      });
+      
+      // Отключение зума
+      document.addEventListener('touchstart', function(event) {
+        if (event.touches.length > 1) {
+          event.preventDefault();
+        }
+      });
+      
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+      
+      console.log('Telegram WebApp готов к работе');
+    } else {
+      console.warn('Приложение работает в режиме разработки');
+    }
+    
+    // Обработка ошибок
+    window.addEventListener('error', function(e) {
+      console.error('Ошибка приложения:', e.error);
+    });
+    
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Необработанное отклонение Promise:', e.reason);
+    });
+  </script>
+  
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Frontend React приложение
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+      - VITE_TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - vpn-network
+
+  # Backend Python API (создадим позже если понадобится)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///app/database/vpn.db
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./database:/app/database
+      - ./backend:/app
+    networks:
+      - vpn-network
+
+  # SQLite база данных (файловая, не нужен отдельный контейнер)
+  # Но создадим volume для persistence
+volumes:
+  sqlite_data:
+    driver: local
+
+networks:
+  vpn-network:
+    driver: bridge
