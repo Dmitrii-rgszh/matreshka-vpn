@@ -5,6 +5,7 @@ import Header from './components/Layout/Header';
 import Navigation from './components/Layout/Navigation';
 import Dashboard from './pages/Dashboard';
 import Servers from './pages/Servers';
+import Stats from './pages/Stats';
 import Subscription from './pages/Subscription';
 import Settings from './pages/Settings';
 
@@ -55,6 +56,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/servers" element={<Servers />} />
+            <Route path="/stats" element={<Stats />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>

@@ -58,12 +58,17 @@ export const useTelegram = () => {
   };
 
   const hapticFeedback = (type: 'light' | 'medium' | 'heavy' | 'success' | 'error' | 'warning') => {
-    if (webApp?.HapticFeedback) {
-      if (type === 'success' || type === 'error' || type === 'warning') {
-        webApp.HapticFeedback.notificationOccurred(type);
-      } else {
-        webApp.HapticFeedback.impactOccurred(type);
+    try {
+      if (webApp?.HapticFeedback) {
+        if (type === 'success' || type === 'error' || type === 'warning') {
+          webApp.HapticFeedback.notificationOccurred(type);
+        } else {
+          webApp.HapticFeedback.impactOccurred(type);
+        }
       }
+    } catch (error) {
+      // Игнорируем ошибки haptic feedback - не критично
+      console.debug('HapticFeedback not supported:', error);
     }
   };
 

@@ -69,10 +69,12 @@ const Servers: React.FC = () => {
   };
 
   const handleUpgrade = () => {
-    hapticFeedback('success');
+    hapticFeedback('light');
     setShowPremiumModal(false);
     // Переход на страницу подписки
-    window.location.hash = '/subscription';
+    setTimeout(() => {
+      window.location.href = '/subscription';
+    }, 300);
   };
 
   const getLoadColor = (load: number) => {
@@ -352,6 +354,7 @@ const Servers: React.FC = () => {
         isOpen={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
         onUpgrade={handleUpgrade}
+        isProcessing={connecting}
       />
     </div>
   );

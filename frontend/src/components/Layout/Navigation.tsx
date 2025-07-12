@@ -19,6 +19,12 @@ const Navigation: React.FC = () => {
       activeIcon: '🌍',
     },
     {
+      path: '/stats',
+      icon: '📊',
+      label: 'Статистика',
+      activeIcon: '📊',
+    },
+    {
       path: '/subscription',
       icon: '⭐',
       label: 'Premium',
